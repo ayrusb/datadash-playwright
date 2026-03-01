@@ -8,7 +8,7 @@ const { chromium } = require('playwright');
 
   let grandTotal = 0;
 
-  for (let seed = 57; seed <= 66; seed++) {
+  for (let seed = 41; seed <= 50; seed++) {
     const url = baseUrl + seed;
 
     await page.goto(url, { waitUntil: "networkidle" });
