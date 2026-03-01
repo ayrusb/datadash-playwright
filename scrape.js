@@ -4,24 +4,28 @@ const { chromium } = require('playwright');
   const browser = await chromium.launch();
   const page = await browser.newPage();
 
-  const base = "https://sanand0.github.io/tdsdata/js_table/?seed=";
+  const baseUrl = "https://sanand0.github.io/tdsdata/js_table/?seed=";
 
   let grandTotal = 0;
 
   for (let seed = 57; seed <= 66; seed++) {
-    const url = base + seed;
-    await page.goto(url);
+    const url = baseUrl + seed;
 
-    // Get full visible page text
-    const content = await page.textContent("body");
+    await page.goto(url, { waitUntil: "networkidle" });
 
-    // Extract all numbers using regex
-    const numbers = content.match(/\d+/g).map(Number);
+    // Get full visible text from page
+    const bodyText = await page.locator("body").innerText();
 
-    const sum = numbers.reduce((a, b) => a + b, 0);
-    grandTotal += sum;
+    // Extract ONLY proper standalone integers
+    const matches = bodyText.match(/\b\d+\b/g) || [];
 
-    console.log(`Seed ${seed} sum:`, sum);
+    const numbers = matches.map(n => parseInt(n, 10));
+
+    const seedSum = numbers.reduce((acc, num) => acc + num, 0);
+
+    console.log(`Seed ${seed} sum: ${seedSum}`);
+
+    grandTotal += seedSum;
   }
 
   console.log("FINAL TOTAL:", grandTotal);
